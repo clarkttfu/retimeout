@@ -1,0 +1,19 @@
+{
+  "name": "retimeout",
+  "version": "0.0.1",
+  "description": "reset a timeout callback mutiple times",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [
+    "deplay",
+    "callback",
+    "timer"
+  ],
+  "author": "clarkttfu@gmail.com",
+  "license": "MIT",
+  "devDependencies": {
+    "should": "^13.2.1"
+  }
+}
