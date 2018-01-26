@@ -1,6 +1,6 @@
 # retimeout
 
-Wraps a function call and returns a resettable timer.
+Wraps a function call and returns a resettable timer:
 
 - A function might not be called until some conditions are met
 - setInterval is not flexible enough to adjust the delay time
@@ -9,34 +9,35 @@ Wraps a function call and returns a resettable timer.
 ## Get started
 
 ```
-const resettable = require('retimeout')(path => persist(path)), new Date)
+const echo = () => console.log(new Date)
+const timer = require('retimeout')(echo)
 
-resettable.reset(1000)
+// loop until connditions are met
+timer.reset(1000)
 ```
 
 ## API
 
 ### retimeout([binding], fn, [...args])
 
-Create a callback wrapper. If `binding` is omitted, `fn` will be invoked with `null`.
-Or if you want to call a method, you must pass `this` to `binding`.
+Set the binding object and create a callback wrapper. If `binding` is omitted, `fn` will be invoked with `null`.
 
 ### retimeout.set(milliseconds)
 
-Set the global default delay time so you can call the reset methods without argument.
+Set the global default delay time so you can call the `reset` method without argument.
 
-### reset(milliseconds) method
+### reset([milliseconds]) method
 
-Reset internal timer with milliseconds
+Reset internal timer. Use the global delay setting if `milliseconds` is omitted.
 
 ### do() method
 
-Invoke the wrapped function or method immediately
+Invoke the wrapped function or method immediately.
 
 ### clear() method
 
-Clear internal timer
+Clear internal timer.
 
 ### release() method
 
-Unbind the callback by setting references to null
+Unbind the callback by setting references to null and return the internel timer.

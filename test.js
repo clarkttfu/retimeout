@@ -44,15 +44,18 @@ describe('Test cases', () => {
 
   it('release successfully', () => {
     const foo = () => {}
-    var resettable = retimeout(this, foo, 1, 2)
+    var resettable = retimeout(this, foo, 1, 2).reset()
     should(resettable._binding).equal(this)
     should(resettable._fn).equal(foo)
     should(resettable._args[1]).equal(2)
     should(resettable._args[0]).equal(1)
-    resettable.reset(2005).release()
+    should(resettable._timeout).be.not.null()
+    var timeout = resettable.release()
     should(resettable._binding).be.null()
     should(resettable._fn).be.null()
     should(resettable._args).be.null()
+    should(resettable._timeout).be.null()
+    should(typeof(timeout.ref) == 'function').be.true()
   })
 
 })

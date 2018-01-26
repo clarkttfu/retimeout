@@ -55,6 +55,11 @@ Delay.prototype.release = function () {
   this._binding = null
   this._fn = null
   this._args = null
+  if (this._timeout) {
+    var timeout = this._timeout
+    this._timeout = null
+    return timeout
+  }
 }
 
 module.exports = Delay
