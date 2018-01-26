@@ -42,5 +42,17 @@ describe('Test cases', () => {
     resettable.reset(2005).do()
   })
 
+  it('release successfully', () => {
+    const foo = () => {}
+    var resettable = retimeout(this, foo, 1, 2)
+    should(resettable._binding).equal(this)
+    should(resettable._fn).equal(foo)
+    should(resettable._args[1]).equal(2)
+    should(resettable._args[0]).equal(1)
+    resettable.reset(2005).release()
+    should(resettable._binding).be.null()
+    should(resettable._fn).be.null()
+    should(resettable._args).be.null()
+  })
 
 })

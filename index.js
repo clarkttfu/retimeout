@@ -2,7 +2,7 @@ var GLOBAL_DELAY = 100
 
 function Delay (binding, fn, ...args) {
   if (! (this instanceof Delay)) {
-    return new Delay(binding, fn, args)
+    return new (Function.prototype.bind.apply(Delay, [null, binding, fn].concat(args)))
   }
 
   if (typeof (binding) == 'function') {
@@ -12,7 +12,7 @@ function Delay (binding, fn, ...args) {
   } else if (typeof (fn) == 'function') {
     this._binding = binding
     this._fn = fn
-    this._args = args
+    this._args = args.slice()
   } else {
     throw Error('a callback function must be supplied')
   }
@@ -39,16 +39,22 @@ Delay.prototype.reset = function (ms = GLOBAL_DELAY) {
   return this
 }
 
+Delay.prototype.do = function () {
+  this.clear()
+  this._fn.apply(this._binding, this._args)
+  return this
+}
+
 Delay.prototype.clear = function () {
   clearTimeout(this._timeout)
   this._timeout = null
   return this
 }
 
-Delay.prototype.do = function () {
-  this.clear()
-  this._fn.apply(this._binding, this._args)
-  return this
+Delay.prototype.release = function () {
+  this._binding = null
+  this._fn = null
+  this._args = null
 }
 
 module.exports = Delay

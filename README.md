@@ -29,10 +29,14 @@ Set the global default delay time so you can call the reset methods without argu
 
 Reset internal timer with milliseconds
 
+### do() method
+
+Invoke the wrapped function or method immediately
+
 ### clear() method
 
 Clear internal timer
 
-### do() method
+### release() method
 
-Invoke the wrapped function or method immediately.
+Unbind the callback by setting references to null
