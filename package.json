@@ -1,6 +1,6 @@
 {
   "name": "retimeout",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "reset a timeout callback mutiple times",
   "main": "index.js",
   "scripts": {

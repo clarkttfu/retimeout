@@ -9,11 +9,15 @@ Wraps a function call and returns a resettable timer:
 ## Get started
 
 ```
-const echo = () => console.log(new Date)
-const timer = require('retimeout')(echo)
+const trigger = () => console.log('%o trigger only if not reset after 1 sec', new Date)
+const timer = require('./index').set(1000)(trigger)
 
-// loop until connditions are met
-timer.reset(1000)
+var stepCosts = [ 310, 990, 1000, 500 ]
+stepCosts.reduce((pre, cur, i) => pre.then(() => {
+  console.log('%o step %d cost:', new Date, i + 1, cur)
+  timer.reset()
+  return new Promise(resolve => setTimeout(() => resolve(), cur))
+}), Promise.resolve())
 ```
 
 ## API
@@ -22,7 +26,7 @@ timer.reset(1000)
 
 Set the binding object and create a callback wrapper. If `binding` is omitted, `fn` will be invoked with `null`.
 
-### retimeout.set(milliseconds)
+### retimeout.set([milliseconds=500])
 
 Set the global default delay time so you can call the `reset` method without argument.
 

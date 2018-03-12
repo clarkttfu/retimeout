@@ -1,4 +1,4 @@
-var GLOBAL_DELAY = 100
+var GLOBAL_DELAY = 1000
 
 function Delay (binding, fn, ...args) {
   if (! (this instanceof Delay)) {
@@ -20,6 +20,7 @@ function Delay (binding, fn, ...args) {
 
 Delay.set = function (ms = GLOBAL_DELAY) {
   GLOBAL_DELAY = ms
+  return Delay
 }
 
 Delay.prototype.bind = function(binding) {
