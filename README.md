@@ -26,7 +26,7 @@ stepCosts.reduce((pre, cur, i) => pre.then(() => {
 
 Set the binding object and create a callback wrapper. If `binding` is omitted, `fn` will be invoked with `null`.
 
-### retimeout.set([milliseconds=500])
+### retimeout.set([milliseconds=1000])
 
 Set the global default delay time so you can call the `reset` method without argument.
 
