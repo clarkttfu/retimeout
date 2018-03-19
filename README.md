@@ -34,14 +34,14 @@ Set the global default delay time so you can call the `reset` method without arg
 
 Reset internal timer. Use the global delay setting if `milliseconds` is omitted.
 
-### do() method
+### do([clear = true]) method
 
-Invoke the wrapped function or method immediately.
+Invoke the wrapped function (and clear the internel timer if called with `true`).
+
+### triggerOn([emitter], ...events) method
+
+Invoke the wrapped function on emitter (defaults to process) events.
 
 ### clear() method
 
 Clear internal timer.
-
-### release() method
-
-Unbind the callback by setting references to null and return the internel timer.

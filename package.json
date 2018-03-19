@@ -1,6 +1,6 @@
 {
   "name": "retimeout",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "reset a timeout callback mutiple times",
   "main": "index.js",
   "scripts": {
@@ -21,6 +21,7 @@
   "author": "clarkttfu@gmail.com",
   "license": "MIT",
   "devDependencies": {
+    "mock-require": "^3.0.1",
     "should": "^13.2.1"
   }
 }
