@@ -1,79 +1,94 @@
-const Events = require('events')
-const should = require('should')
-const mock = require('mock-require')
-
-const emitter = new Events()
-mock('process', emitter)
-
-const retimeout = require('./index.js')
+const Retimeout = require('./index.js')
 
 describe('Test cases', () => {
-
-  it('should finish in 50ms', done => {
-    var delay = 50
-    var start = Date.now()
-    retimeout(() => {
-      should(Date.now() - start).greaterThanOrEqual(delay)
-      done()
+//
+  it('should finish around delay time', done => {
+    let delay = 50
+    let start = Date.now()
+    Retimeout(() => {
+      if (Date.now() - start >= delay) done()
+      else done('should not be herer')
     }).reset(delay)
   })
 
-  it('should not call until reset', done => {
-    var start = Date.now()
-    var resettable = retimeout(() => {
-      if (Date.now() - start < 30) done('should not call')
-      done()
-    }).reset(30)
-  })
-
-  it('trigger on process exit', done => {
-    retimeout(done).triggerOn('beforeExit')
-    emitter.emit('beforeExit')
-  })
-
-  it('trigger on target events', done => {
-    var counter = 0
-    retimeout(() => {
-      if (++counter === 3) done()
-    }).triggerOn(emitter, 'event1', 'event2').triggerOn(emitter, 'event3')
-    emitter.emit('event2')
-    emitter.emit('event1')
-    emitter.emit('event3')
-  })
-
-  it('reset and finish around 20ms', done => {
-    var start = Date.now()
-    var resettable = retimeout(() => {
-      should(Date.now() - start).greaterThanOrEqual(20)
-      done()
-    }).reset(50)
-    setTimeout(() => resettable.reset(10), 10)
+  it('reset and finish at next loop', done => {
+    let start = Date.now()
+    Retimeout(() => {
+      let waited = Date.now() - start
+      if (waited >= 20) done()
+      else done('should not be herer')
+    }).reset(10).reset(20)
   })
 
   it('clear successfully', done => {
-    var resettable = retimeout(() => done('should not call'))
-    resettable.reset(20).clear()
-    setTimeout(() => done(), 30)
+    Retimeout(() => done('should not call')).reset(25).clear()
+    setTimeout(done, 30)
   })
 
-  it('do without clearing the timer', done => {
+  it('do/invoke without clearing the timer', done => {
     var counter = 0
-    var resettable = retimeout(() => ++counter)
-    resettable.reset(50).do(false)
+    var resettable = Retimeout(() => ++counter)
+    resettable.reset(10).do(false).do(false)
     setTimeout(() => {
-      should(counter).equal(2)
-      done()
-    }, 60)
+      if (counter === 3) done()
+    }, 15)
   })
 
   it('do and clear the timer', done => {
     var counter = 0
-    var resettable = retimeout(() => ++counter)
-    resettable.reset(50).do()
+    var resettable = Retimeout(() => ++counter)
+    resettable.reset(10).do()
     setTimeout(() => {
-      should(counter).equal(1)
-      done()
+      if (counter === 1) done()
     }, 60)
   })
 
+  it('reset until maximum delay', done => {
+    var interval = null
+    var start = Date.now()
+    var timer = Retimeout(() => {
+      clearInterval(interval)
+      var waited = Date.now() - start
+      if (waited < 50) done('should not be here')
+      else done()
+    }).reset(20, 50)
+    interval = setInterval(timer.reset.bind(timer), 10)
+  })
+
+  it('binding returns bound reset method', done => {
+    var start = Date.now()
+    var reset = Retimeout(() => {
+      if (Date.now() - start < 10) done('should not be here')
+      else done()
+    }).binding(10)
+    reset()
+  })
+
+  it('invokes with null by default', done => {
+    new Retimeout(function () {
+      if (this === global) done()
+    }).reset(0)
+  })
+
+  it('support lazy re-bind', done => {
+    var counter = 0
+    var rebinding = {}
+    var timer = new Retimeout(function (arg) {
+      if (++counter === 1 && this !== global) done('not bind yet')
+      else if (counter === 2 && this === rebinding && arg === 'hello') done()
+    }).reset(0)
+    // do not (sync) rebind immediately, it's faster than the async timer
+    setTimeout(() => timer.rebind(rebinding, 'hello').reset(0))
+  })
+
+  it('re-bind do NOT work if fn is already bound', done => {
+    var binding = {}
+    var foo = function (arg) {
+      if (this === binding && arg === 'foo') done()
+      else done('the fn should not be re-bound')
+    }
+    var timer = new Retimeout(foo.bind(binding, 'foo')).reset(10)
+    // do not (sync) rebind immediately, it's faster than the async timer
+    setTimeout(() => timer.rebind(null, 'hello').reset(0))
+  })
 })

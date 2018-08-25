@@ -2,46 +2,47 @@
 
 Wraps a function call and returns a resettable timer:
 
-- A function might not be called until some conditions are met
+- A function call should be delayed until some conditions are met
 - setInterval is not flexible enough to adjust the delay time
-- merge sequential expensive calls into one
+- merge sequential expensive calls into once
 
 ## Get started
 
 ```
-const trigger = () => console.log('%o trigger only if not reset after 1 sec', new Date)
-const timer = require('./index').set(1000)(trigger)
+const Retimeout = require('retimeout')
 
-var stepCosts = [ 310, 990, 1000, 500 ]
-stepCosts.reduce((pre, cur, i) => pre.then(() => {
-  console.log('%o step %d cost:', new Date, i + 1, cur)
-  timer.reset()
-  return new Promise(resolve => setTimeout(() => resolve(), cur))
-}), Promise.resolve())
+const timer1 = new Retimeout(() => console.log('called after 1 sec'))
+timer.reset() // reset in 1 second by default
+
+const timer2 = Retimeout(() => console.log('reset until maximum delay (5s) reached'))
+setInterval(timer.binding(15, 5000), 10)
+
+// clear the timer and invoke immediately
+timer2.do()
 ```
 
 ## API
 
-### retimeout([binding], fn, [...args])
+### Retimeout(fn, [...args])
 
-Set the binding object and create a callback wrapper. If `binding` is omitted, `fn` will be invoked with `null`.
+Create a callback wrapper. `fn` will be invoked with `null`.
 
-### retimeout.set([milliseconds=1000])
+### reset(delay = 1000, maxDelay = Number.POSITIVE_INFINITY) method
 
-Set the global default delay time so you can call the `reset` method without argument.
+Reset and start the internal timer. `delay` and `maxDelay` will be remembered!
 
-### reset([milliseconds]) method
+### binding(delay = 1000, maxDelay = Number.POSITIVE_INFINITY) method
 
-Reset internal timer. Use the global delay setting if `milliseconds` is omitted.
+Sugar method that equals to `timer.reset.bind(timer, delay, maxDelay)`
 
 ### do([clear = true]) method
 
-Invoke the wrapped function (and clear the internel timer if called with `true`).
-
-### triggerOn([emitter], ...events) method
-
-Invoke the wrapped function on emitter (defaults to process) events.
+Invoke the wrapped function and clear the timer if called with `true`.
 
 ### clear() method
 
-Clear internal timer.
+Clear internal timer
+
+### rebind(thisArg, args) method
+
+Change binding context for the wrapped function

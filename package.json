@@ -1,6 +1,6 @@
 {
   "name": "retimeout",
-  "version": "0.0.6",
+  "version": "0.1.0",
   "description": "reset a timeout callback mutiple times",
   "main": "index.js",
   "scripts": {
@@ -18,10 +18,10 @@
   "bugs": {
     "url": "https://github.com/zealotds/retimeout/issues"
   },
+  "engines": {
+    "node": ">=6.9"
+  },
   "author": "clarkttfu@gmail.com",
   "license": "MIT",
-  "devDependencies": {
-    "mock-require": "^3.0.1",
-    "should": "^13.2.1"
-  }
+  "devDependencies": {}
 }

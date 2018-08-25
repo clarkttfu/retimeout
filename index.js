@@ -1,74 +1,79 @@
-const process = require('process')
-const Events = require('events')
+'use strict'
+const symFn = Symbol('bound function')
+const symThisArg = Symbol('this argument of the bound function')
+const symArgs = Symbol('arguments for invoking bound function')
+const symOnTimeout = Symbol('the do method bound with current instance of Retimeout')
+const symTimeout = Symbol('internal timer of setTimeout result')
+const symDelay = Symbol('time to delay in ms')
+const symStart = Symbol('start point of the first call of reset series')
+const symMaximumDelay = Symbol('maximum delay in ms')
 
-var GLOBAL_DELAY = 1000
+module.exports = Retimeout
 
-function Delay (binding, fn, ...args) {
-  if (!(this instanceof Delay)) {
-    return new (Function.prototype.bind.apply(Delay, [null, binding, fn].concat(args)))()
+function Retimeout (fn, ...args) {
+  if (!(this instanceof Retimeout)) {
+    return new Retimeout(fn, ...args)
   }
 
-  if (typeof (binding) == 'function') {
-    this._binding = null
-    this._fn = binding
-    this._args = fn === undefined ? [] : [ fn ].concat(args)
-  } else if (typeof (fn) == 'function') {
-    this._binding = binding
-    this._fn = fn
-    this._args = args.slice()
+  if (typeof (fn) === 'function') {
+    this[symFn] = fn
+    this[symThisArg] = null
+    this[symArgs] = args
+    this[symTimeout] = null
+    this[symStart] = null
+    this[symDelay] = 1000
+    this[symMaximumDelay] = Number.POSITIVE_INFINITY
+    this[symOnTimeout] = this.do.bind(this, true)
   } else {
     throw Error('a callback function must be supplied')
   }
-}
-
-Delay.set = function (ms = GLOBAL_DELAY) {
-  GLOBAL_DELAY = ms
-  return Delay
-}
-
-Delay.prototype.triggerOn = function (emitter, ...events) {
-  var target = process
-  if (typeof emitter === 'string') {
-    events.unshift(emitter)
-  } else if (emitter instanceof Events) {
-    target = emitter
-  }
-  var self = this
-  events.forEach(event => {
-    target.on(event, () => {
-      self.do()
-    })
+  Object.defineProperty(this, 'delayed', {
+    get: function () { return this[symStart] }
   })
+}
+
+Retimeout.prototype.rebind = function (thisArg, ...args) {
+  this[symThisArg] = thisArg
+  this[symArgs] = args
   return this
 }
 
-Delay.prototype.bind = function (binding) {
-  this._binding = binding
-  return this
-}
-
-Delay.prototype.reset = function (ms = GLOBAL_DELAY) {
-  var self = this
-  if (self._timeout) {
-    clearTimeout(self._timeout)
+Retimeout.prototype.reset = function (msDelay, msMaxDelay) {
+  if (typeof msDelay === 'number' && msDelay >= 0) {
+    this[symDelay] = msDelay
   }
-  self._timeout = setTimeout(() => {
-    self._timeout = null
-    self._fn.apply(self._binding, self._args)
-  }, ms)
+  if (typeof msMaxDelay === 'number') {
+    if (msMaxDelay <= this[symDelay]) {
+      throw Error('delay time must be less than the maximum delay time')
+    }
+    this[symMaximumDelay] = msMaxDelay
+  }
+  if (this.clear()[symStart] === null) {
+    this[symStart] = Date.now()
+  }
+  this[symTimeout] = setTimeout(this[symOnTimeout],
+    Math.min(this[symDelay], this[symMaximumDelay] - Date.now() + this[symStart])
+  )
   return this
 }
 
-Delay.prototype.do = function (clear = true) {
+Retimeout.prototype.binding = function (msDelay, msMaxDelay) {
+  return this.reset.bind(this, msDelay, msMaxDelay)
+}
+
+Retimeout.prototype.do = function (clear = true) {
+  this[symStart] = null
   if (clear) this.clear()
-  this._fn.apply(this._binding, this._args)
+  if (this[symFn].hasOwnProperty('prototype')) {
+    this[symFn].call(this[symThisArg], ...this[symArgs])
+  } else {
+    this[symFn]()
+  }
   return this
 }
 
-Delay.prototype.clear = function () {
-  clearTimeout(this._timeout)
-  this._timeout = null
+Retimeout.prototype.clear = function () {
+  clearTimeout(this[symTimeout])
+  this[symTimeout] = null
   return this
 }
-
-module.exports = Delay
