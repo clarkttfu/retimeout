@@ -23,6 +23,8 @@ timer2.do()
 
 ## API
 
+__!!! API changed since 0.x, read the test cases for more information.__
+
 ### Retimeout(fn, [...args])
 
 Create a callback wrapper. `fn` will be invoked with `null`.
