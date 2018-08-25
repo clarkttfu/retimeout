@@ -28,7 +28,7 @@ function Retimeout (fn, ...args) {
     throw Error('a callback function must be supplied')
   }
   Object.defineProperty(this, 'delayed', {
-    get: function () { return this[symStart] }
+    get: function () { return this[symStart] !== null ? Date.now() - this[symStart] : 0 }
   })
 }
 
@@ -62,13 +62,13 @@ Retimeout.prototype.binding = function (msDelay, msMaxDelay) {
 }
 
 Retimeout.prototype.do = function (clear = true) {
-  this[symStart] = null
   if (clear) this.clear()
   if (this[symFn].hasOwnProperty('prototype')) {
     this[symFn].call(this[symThisArg], ...this[symArgs])
   } else {
     this[symFn]()
   }
+  this[symStart] = null
   return this
 }
 

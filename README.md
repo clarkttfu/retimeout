@@ -12,13 +12,13 @@ Wraps a function call and returns a resettable timer:
 const Retimeout = require('retimeout')
 
 const timer1 = new Retimeout(() => console.log('called after 1 sec'))
-timer.reset() // reset in 1 second by default
+timer1.reset() // reset in 1 second by default
 
-const timer2 = Retimeout(() => console.log('reset until maximum delay (5s) reached'))
-setInterval(timer.binding(15, 5000), 10)
+const timer2 = Retimeout(input => console.log('reset until maximum delay:', input))
+setInterval(timer2.binding(15, 5000), 10)
 
 // clear the timer and invoke immediately
-timer2.do()
+timer2.rebind(null, 'change input').do()
 ```
 
 ## API
@@ -48,3 +48,7 @@ Clear internal timer
 ### rebind(thisArg, args) method
 
 Change binding context for the wrapped function
+
+### delayed (readonly) property
+
+Milliseconds has deferred the function invoking

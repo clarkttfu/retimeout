@@ -3,19 +3,16 @@ const Retimeout = require('./index.js')
 describe('Test cases', () => {
 //
   it('should finish around delay time', done => {
-    let delay = 50
-    let start = Date.now()
-    Retimeout(() => {
-      if (Date.now() - start >= delay) done()
+    var delay = 50
+    var timer = Retimeout(() => {
+      if (timer.delayed >= delay) done()
       else done('should not be herer')
     }).reset(delay)
   })
 
   it('reset and finish at next loop', done => {
-    let start = Date.now()
-    Retimeout(() => {
-      let waited = Date.now() - start
-      if (waited >= 20) done()
+    var timer = Retimeout(() => {
+      if (timer.delayed >= 20) done()
       else done('should not be herer')
     }).reset(10).reset(20)
   })
@@ -45,23 +42,20 @@ describe('Test cases', () => {
 
   it('reset until maximum delay', done => {
     var interval = null
-    var start = Date.now()
     var timer = Retimeout(() => {
       clearInterval(interval)
-      var waited = Date.now() - start
-      if (waited < 50) done('should not be here')
+      if (timer.delayed < 50) done('should not be here')
       else done()
     }).reset(20, 50)
     interval = setInterval(timer.reset.bind(timer), 10)
   })
 
   it('binding returns bound reset method', done => {
-    var start = Date.now()
-    var reset = Retimeout(() => {
-      if (Date.now() - start < 10) done('should not be here')
+    var timer = Retimeout(() => {
+      if (timer.delayed < 10) done('should not be here')
       else done()
-    }).binding(10)
-    reset()
+    })
+    timer.binding(10)()
   })
 
   it('invokes with null by default', done => {
