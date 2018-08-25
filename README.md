@@ -33,7 +33,7 @@ Create a callback wrapper. `fn` will be invoked with `null`.
 
 Reset and start the internal timer. `delay` and `maxDelay` will be remembered!
 
-### binding(delay = 1000, maxDelay = Number.POSITIVE_INFINITY) method
+### binding(delay, maxDelay) method
 
 Sugar method that equals to `timer.reset.bind(timer, delay, maxDelay)`
 
