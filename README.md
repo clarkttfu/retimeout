@@ -23,7 +23,7 @@ timer2.rebind(null, 'change input').do()
 
 ## API
 
-__!!! API changed since 0.x, read the test cases for more information.__
+__!!! API changed since 0.0.x, read the test cases for more information.__
 
 ### Retimeout(fn, [...args])
 
@@ -49,6 +49,6 @@ Clear internal timer
 
 Change binding context for the wrapped function
 
-### delayed (readonly) property
+### delayed readonly property
 
 Milliseconds has deferred the function invoking
