@@ -1,6 +1,6 @@
 {
   "name": "retimeout",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "reset a timeout callback mutiple times",
   "main": "index.js",
   "scripts": {
@@ -13,10 +13,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/zealotds/retimeout.git"
+    "url": "https://github.com/clarkttfu/retimeout.git"
   },
   "bugs": {
-    "url": "https://github.com/zealotds/retimeout/issues"
+    "url": "https://github.com/clarkttfu/retimeout/issues"
   },
   "engines": {
     "node": ">=6.9"
