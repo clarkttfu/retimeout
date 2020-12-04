@@ -1,5 +1,7 @@
 # retimeout
 
+**!! Deprecated !! Use timer.refresh() instead**
+
 Wraps a function call and returns a resettable timer:
 
 - A function call should be delayed until some conditions are met
